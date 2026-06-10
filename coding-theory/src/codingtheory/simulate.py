@@ -104,19 +104,41 @@ def run_sweep(
     batch_size: int = 20_000,
     channel_label: str = "",
     verbose: bool = True,
+    csv_path=None,
 ) -> list[dict]:
     """Прогон по сетке параметров канала. Перед замерами — прогрев
-    (JIT-компиляция galois не должна попадать в тайминги)."""
+    (JIT-компиляция galois не должна попадать в тайминги).
+
+    Если задан csv_path, результат сохраняется после каждой точки,
+    а уже посчитанные точки (имеющиеся в файле) пропускаются —
+    прерванный прогон можно возобновить перезапуском.
+    """
+    rows = []
+    if csv_path is not None:
+        import os
+        if os.path.exists(csv_path):
+            rows = load_csv(csv_path)
+
+    def done(p):
+        return any(abs(r["p"] - p) <= 1e-3 * p for r in rows)
+
     warm_rng = np.random.default_rng(0)
     codec.decode(codec.encode(codec.random_messages(2, warm_rng)))
 
-    rows = []
     for p in p_range:
+        p = float(p)
+        if done(p):
+            if verbose:
+                print(f"[{codec.name} | {channel_label}] p={p:.5g}  уже посчитано, пропуск", flush=True)
+            continue
         row = simulate_point(
-            codec, make_channel, float(p), n_blocks, seed,
+            codec, make_channel, p, n_blocks, seed,
             batch_size=batch_size, channel_label=channel_label,
         )
         rows.append(row)
+        rows.sort(key=lambda r: r["p"])
+        if csv_path is not None:
+            save_csv(rows, csv_path)
         if verbose:
             print(
                 f"[{codec.name} | {channel_label}] p={p:.5g}  "

@@ -20,7 +20,6 @@ from codingtheory import (
     GaloisRS,
     SymbolErrorChannel,
     run_sweep,
-    save_csv,
 )
 
 RESULTS = pathlib.Path(__file__).resolve().parent.parent / "results"
@@ -50,21 +49,21 @@ def main():
     ]
     for codec, make_channel, p_range, label, fname in sweeps:
         print(f"\n=== {codec.name} | {label}: N={N_BLOCKS}, seed={SEED} ===")
-        rows = run_sweep(
+        run_sweep(
             codec, make_channel, p_range, N_BLOCKS, SEED,
             batch_size=BATCH, channel_label=label,
+            csv_path=RESULTS / fname,
         )
-        save_csv(rows, RESULTS / fname)
         print(f"-> {RESULTS / fname}")
 
     # Валидация Монте-Карло: символьный канал, есть точная теоретическая FER
     make_symbol = lambda p, rng: SymbolErrorChannel(p, 4, rng)
     print(f"\n=== {rs.name} | SymbolError: N={N_BLOCKS}, seed={SEED} ===")
-    rows = run_sweep(
+    run_sweep(
         rs, make_symbol, P_SYMBOL, N_BLOCKS, SEED,
         batch_size=BATCH, channel_label="SymbolError",
+        csv_path=RESULTS / "validation_rs_symbol.csv",
     )
-    save_csv(rows, RESULTS / "validation_rs_symbol.csv")
     print(f"-> {RESULTS / 'validation_rs_symbol.csv'}")
 
 

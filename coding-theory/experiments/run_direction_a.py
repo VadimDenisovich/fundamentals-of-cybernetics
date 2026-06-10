@@ -11,7 +11,7 @@ import pathlib
 
 import numpy as np
 
-from codingtheory import BSCChannel, GaloisRS, ReedsoloRS, run_sweep, save_csv
+from codingtheory import BSCChannel, GaloisRS, ReedsoloRS, run_sweep
 
 RESULTS = pathlib.Path(__file__).resolve().parent.parent / "results"
 
@@ -30,11 +30,11 @@ def main():
         (ReedsoloRS(255, 223, fcr=1), "direction_a_reedsolo.csv"),
     ]:
         print(f"\n=== {codec.name}: N={N_BLOCKS}, seed={SEED} ===")
-        rows = run_sweep(
+        run_sweep(
             codec, make_bsc, P_RANGE, N_BLOCKS, SEED,
             batch_size=BATCH, channel_label="BSC",
+            csv_path=RESULTS / fname,
         )
-        save_csv(rows, RESULTS / fname)
         print(f"-> {RESULTS / fname}")
 
 
