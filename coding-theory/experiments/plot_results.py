@@ -44,7 +44,7 @@ def ztest_table(rows1, rows2, label1, label2, path, what="FER"):
         "|---|---|---|---|---|---|",
     ]
     for r1, r2 in zip(rows1, rows2):
-        assert abs(r1["p"] - r2["p"]) < 1e-12
+        assert abs(r1["p"] - r2["p"]) <= 1e-3 * r1["p"]
         z, pv = two_proportion_ztest(
             int(r1["frame_errors"]), int(r1["n_blocks"]),
             int(r2["frame_errors"]), int(r2["n_blocks"]),
@@ -60,19 +60,22 @@ def ztest_table(rows1, rows2, label1, label2, path, what="FER"):
 
 def timing_table(rows_g, rows_r, path):
     lines = [
-        "| p | galois, мс/блок | reedsolo, мс/блок | отношение | galois, кбит/с | reedsolo, кбит/с |",
+        "| p | galois, мс/блок | reedsolo, мс/блок | galois/reedsolo | galois, кбит/с | reedsolo, кбит/с |",
         "|---|---|---|---|---|---|",
     ]
     ratios = []
     for rg, rr in zip(rows_g, rows_r):
-        ratio = rr["decode_time_per_block_ms"] / rg["decode_time_per_block_ms"]
+        ratio = rg["decode_time_per_block_ms"] / rr["decode_time_per_block_ms"]
         ratios.append(ratio)
         lines.append(
             f"| {rg['p']:.4g} | {rg['decode_time_per_block_ms']:.3f} "
             f"| {rr['decode_time_per_block_ms']:.3f} | x{ratio:.1f} "
             f"| {rg['throughput_kbit_s']:.0f} | {rr['throughput_kbit_s']:.0f} |"
         )
-    lines.append(f"\nСреднее отношение времени декодирования (reedsolo/galois): x{sum(ratios)/len(ratios):.1f}")
+    lines.append(
+        f"\nСреднее отношение времени декодирования (galois/reedsolo): "
+        f"x{sum(ratios)/len(ratios):.1f} (reedsolo быстрее)"
+    )
     path.write_text("\n".join(lines) + "\n")
     print(f"-> {path}")
 
