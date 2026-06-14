@@ -4,7 +4,7 @@
 (Направление А) и сравнение кодов RS(15,11,2) / BCH(15,7,2) в каналах BSC и Burst
 (Направление Б) методом Монте-Карло.
 
-**Отчёт: [REPORT.md](REPORT.md)**
+**Отчёт: [REPORT.md](REPORT.md) · [REPORT.pdf](REPORT.pdf)** (формулы в LaTeX, отображаются и на GitHub, и в PDF)
 
 ## Структура
 
@@ -21,6 +21,9 @@ experiments/
   plot_results.py        # графики и статистические таблицы
 tools/
   verify_manual_examples.py  # проверка письменных примеров из отчёта (GF(2³), БМ)
+report/
+  build.sh               # сборка REPORT.pdf (pandoc + lualatex, шрифт CMU Serif)
+  header.tex             # оформление PDF
 tests/                   # pytest
 results/                 # CSV, PNG, md-таблицы
 ```
@@ -39,6 +42,8 @@ python tools/verify_manual_examples.py    # проверка письменны�
 python experiments/run_direction_a.py     # ~1.5 ч
 python experiments/run_direction_b.py     # ~1 ч
 python experiments/plot_results.py        # графики из CSV
+
+bash report/build.sh                      # пересборка REPORT.pdf (нужны pandoc + lualatex)
 ```
 
 Все эксперименты детерминированы (фиксированные seed) и воспроизводимы.

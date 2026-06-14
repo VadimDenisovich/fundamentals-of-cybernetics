@@ -1,0 +1,43 @@
+% Оформление PDF-отчёта (подключается pandoc через --include-in-header)
+\usepackage{xcolor}
+\definecolor{accent}{HTML}{1F4E79}
+\definecolor{accentlight}{HTML}{2E74B5}
+\definecolor{shadecolor}{HTML}{F4F6F8}   % фон блоков кода (окружение Shaded в pandoc)
+\definecolor{rulecol}{HTML}{D5DCE4}
+
+% Цветные заголовки (KOMA-механизм, без конфликта с titlesec)
+\addtokomafont{title}{\color{accent}}
+\addtokomafont{subtitle}{\color{accentlight}}
+\addtokomafont{section}{\color{accent}}
+\addtokomafont{subsection}{\color{accent}}
+\addtokomafont{subsubsection}{\color{accentlight}}
+\setkomafont{caption}{\small}
+\setkomafont{captionlabel}{\bfseries\color{accent}}
+
+% Рисунки: фиксируем на месте, по умолчанию 80% ширины, по центру
+\usepackage{float}
+\floatplacement{figure}{H}
+\setkeys{Gin}{width=0.80\linewidth,keepaspectratio}
+\usepackage{caption}
+\captionsetup{justification=centering,skip=6pt}
+
+% Таблицы: лёгкие отступы и перенос длинных строк
+\usepackage{booktabs}
+\renewcommand{\arraystretch}{1.18}
+
+% Колонтитулы
+\usepackage[headsepline]{scrlayer-scrpage}
+\clearpairofpagestyles
+\ihead{\small\color{accent}\bfseries Коды РС и BCH}
+\chead{}
+\ohead{\small\color{accent}\thepage}
+\cfoot{}
+\setkomafont{pagehead}{\normalfont}
+\pagestyle{scrheadings}
+
+% Цвета гиперссылок задаются pandoc-переменными в build.sh
+% (accent/accentlight определены выше и доступны template-у hyperref).
+
+% Аккуратная типографика
+\usepackage{microtype}
+\setlength{\emergencystretch}{2em}
